@@ -1,0 +1,23 @@
+{
+  "pins" : [
+    {
+      "identity" : "afnetworking",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/AFNetworking/AFNetworking.git",
+      "state" : {
+        "revision" : "ffae2391ab0c29dc88eb0a58d2f5b2c2c27cadbf",
+        "version" : "4.0.1"
+      }
+    },
+    {
+      "identity" : "realhttp",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/immobiliare/RealHTTP",
+      "state" : {
+        "branch" : "main",
+        "revision" : "12c5e2d21f34ee5fa1036a354e8e5bc2db5bf561"
+      }
+    }
+  ],
+  "version" : 2
+}
