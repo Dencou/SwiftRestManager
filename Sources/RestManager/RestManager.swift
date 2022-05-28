@@ -53,13 +53,20 @@ public struct RestManager {
         )
     }
     
+    public func delete<T : Decodable>(
+        _ type : T.Type,
+        path: String,
+        queryParams: ParamMap? = nil
+    )async throws -> Response<T>{
+        return try await makeRequest(type, path: path, method: "DELETE", queryParams: queryParams)
+    }
+    
     public func get<T : Decodable>(
         _ type: T.Type,
         path: String,
-        method: String,
         queryParams: ParamMap? = nil
     ) async throws -> Response<T>  {
-        return try await makeRequest(type, path: path, method: "GET")
+        return try await makeRequest(type, path: path, method: "GET", queryParams: queryParams)
     }
 }
 
