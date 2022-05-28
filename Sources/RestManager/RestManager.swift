@@ -1,5 +1,6 @@
 import RealHTTP
 import AFNetworking
+import Foundation
 
 public typealias ParamMap = [String: String]?
 
@@ -27,6 +28,8 @@ public struct RestManager {
         queryParams: ParamMap? = nil
     )  async throws -> Response<T> {
         
+        NSLog("HttpRequest\nMethod: \(method), Path: \(path) waiting.")
+        
         let headers = [
             "Authorization": authorizationProvider.getUserAuthorizationToken(),
             "Accept": "application/json"
@@ -42,11 +45,20 @@ public struct RestManager {
             responseType: nil
         )
         
+        NSLog("HttpResponse\nMethod: \(method), Path: \(path), StatusCode: \(rawResponse.status)")
+        
         let data: Data = rawResponse.body!.data(using: .utf8)!
         let decoder = JSONDecoder()
         
+        var body: T? = nil
+        do {
+            body = try decoder.decode(_: T.self, from: data)
+        } catch {
+            NSLog("Failed to decode response: \(rawResponse.body)")
+        }
+        
         return Response<T>(
-            body: try decoder.decode(_: T.self, from: data),
+            body: body,
             status: rawResponse.status,
             headers: rawResponse.headers,
             url: rawResponse.url
