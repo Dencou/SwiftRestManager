@@ -107,7 +107,22 @@ public class RealHttpRawHttpRequestMaker: RawHttpRequestMaker {
         let req = HTTPRequest {
             // Setup default params
             $0.url = URL(string: url)!
-            $0.method = .get
+            switch method {
+            case "POST":
+                $0.method = .post
+            case "DELETE":
+                $0.method = .delete
+            case "PATCH":
+                $0.method = .patch
+            case "PUT":
+                $0.method = .put
+            case "OPTIONS":
+                $0.method = .options
+            case "HEAD":
+                $0.method = .head
+            default:
+                $0.method = .get
+            }
             $0.timeout = 15
             $0.headers = HTTPHeaders(rawDictionary: headers!)
             $0.path = url
