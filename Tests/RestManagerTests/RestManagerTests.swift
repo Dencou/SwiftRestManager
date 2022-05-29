@@ -30,4 +30,27 @@ final class RestManagerTests: XCTestCase {
         )
         print(resultDelete.status)
     }
+    
+    func test_restResource() async throws {
+        
+        let resource = RestResourceFactory.createResource(TestType.self, Int.self, path: "/users", restManager: restMgr)
+        
+        let allUsers = try await resource.getAll(queryParams: nil)
+        
+        for user in allUsers.body!{
+            NSLog("User Name: \(user.name)")
+            let fullUser = try await resource.getById(id: user.id)
+            NSLog("User Name: \(fullUser.body?.id)")
+        }
+        
+        NSLog("AllUsers: \(allUsers.body)")
+        
+    }
+}
+
+
+class TestType : Decodable{
+    let name: String
+    let email: String
+    let id: Int
 }

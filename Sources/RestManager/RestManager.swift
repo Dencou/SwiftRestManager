@@ -80,6 +80,15 @@ public struct RestManager {
     ) async throws -> Response<T>  {
         return try await makeRequest(type, path: path, method: "GET", queryParams: queryParams)
     }
+    
+    public func post<T : Decodable>(
+        _ type: T.Type,
+        path: String,
+        body: AnyObject,
+        queryParams: ParamMap? = nil
+    ) async throws -> Response<T>  {
+        return try await makeRequest(type, path: path, method: "POST", body: body, queryParams: queryParams)
+    }
 }
 
 
@@ -221,4 +230,82 @@ public class Response<T> {
         self.status = status
         self.url = url
     }
+}
+
+public class RestResource<T : Decodable, ID> {
+    let path: String
+    let type: T.Type
+    let idType: ID.Type
+    let restManager: RestManager
+    init (
+        _ type: T.Type,
+        _ idType: ID.Type,
+        path: String,
+        restManager: RestManager
+    ){
+        self.path = path
+        self.idType = idType
+        self.type = type
+        self.restManager = restManager
+    }
+    func getById(id: ID)  async throws -> Response<T> {
+        return try await restManager.get(
+            T.self,
+            path: "\(self.path)/\(id)",
+            queryParams: nil
+        )
+    }
+    func delete(id: ID)  async throws -> Response<T> {
+        return try await restManager.delete(
+            T.self,
+            path: "\(self.path)/\(id)",
+            queryParams: nil
+        )
+    }
+    func post(body: AnyObject)  async throws -> Response<T> {
+        return try await restManager.post(
+            T.self,
+            path: self.path,
+            body: body,
+            queryParams: nil
+        )
+    }
+    func patch(id: ID, body: AnyObject)  async throws -> Response<T> {
+        return try await restManager.makeRequest(
+            T.self,
+            path: "\(self.path)/\(id)",
+            method: "PATCH",
+            body: body,
+            queryParams: nil
+        )
+    }
+    func put(id: ID, body: AnyObject)  async throws -> Response<T> {
+        return try await restManager.makeRequest(
+            T.self,
+            path: "\(self.path)/\(id)",
+            method: "PATCH",
+            body: body,
+            queryParams: nil
+        )
+    }
+    func getAll(queryParams: ParamMap?)  async throws -> Response<[T]> {
+        return try await restManager.get(
+            [T].self,
+            path: self.path,
+            queryParams: queryParams
+        )
+    }
+}
+
+public class RestResourceFactory {
+    
+    public static func createResource<T : Decodable, ID>(
+        _ type: T.Type,
+        _ idType: ID.Type,
+        path: String,
+        restManager: RestManager
+    ) -> RestResource<T, ID> {
+        return RestResource(T.self, ID.self, path: path, restManager: restManager)
+    }
+    
 }
